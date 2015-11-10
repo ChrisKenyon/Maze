@@ -48,7 +48,7 @@ int main()
       ifstream fin;
 
       // Read the maze from the file.
-      string fileName = "maze1.txt";
+      string fileName = "maze0.txt";
       
       fin.open(fileName.c_str());
       if (!fin)
@@ -65,17 +65,18 @@ int main()
       Graph g(m.numRows()*m.numCols());
       m.mapMazeToGraph(g);
 
-	  //test print with test stack
+	  //test print with test stack for maze0
 	  stack<Graph::vertex_descriptor> s;
 	  s.push(vertex(0, g));
 	  s.push(vertex(1, g));
 	  s.push(vertex(2, g));
-	  s.push(vertex(103, g));
+	  s.push(vertex(3, g));
+	  s.push(vertex(4, g));
+	  s.push(vertex(24, g));
 	  m.printPath(num_vertices(g), s, g);
 	  //
 
-
-      //cout << g << endl;
+      cout << g << endl;
    }
    catch (std::exception ex)
    {

@@ -51,17 +51,16 @@ typedef adjacency_list<vecS, vecS, bidirectionalS, VertexProperties, EdgePropert
 ostream& operator << (ostream &ostr, const Graph &g) {
 	// Iterate through the vertex properties and print them out
 	typedef graph_traits<Graph>::vertex_iterator vertex_iter;
-	std::pair<vertex_iter, vertex_iter> vp;
-	for (vp = vertices(g); vp.first != vp.second; ++vp.first)
-		ostr << g[*vp.first] << std::endl;
+	std::pair<vertex_iter, vertex_iter> vertIter;
+	for (vertIter = vertices(g); vertIter.first != vertIter.second; ++vertIter.first)
+		ostr << g[*vertIter.first] << std::endl;
 	ostr << std::endl;
-
+	
 	// Iterate through the edges and print them out
 	typedef graph_traits<Graph>::edge_iterator edge_iter;
-	std::pair<edge_iter, edge_iter> ep;
-	edge_iter ei, ei_end;
-	for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
-		ostr << g[*ei] << endl;
+	edge_iter edgeIt, edgeIt_end;
+	for (tie(edgeIt, edgeIt_end) = edges(g); edgeIt != edgeIt_end; ++edgeIt)
+		ostr << g[*edgeIt] << endl;
 
 	return ostr;
 }

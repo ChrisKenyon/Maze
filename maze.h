@@ -105,31 +105,30 @@ bool maze::isLegal(int i, int j)
 void maze::mapMazeToGraph(Graph &g)
 // Create a graph g that represents the legal moves in the maze m.
 {
-	for (int i = 0; i < rows - 1; i++)
+	for (int i = 0; i < rows; i++)
 	{
-		for (int j = 0; j < cols - 1; j++)
+		for (int j = 0; j < cols; j++)
 		{
-			int current = i*rows + j;
+			int current = i*cols + j;
 			g[vertex(current, g)].cell = pair<int,int>(i, j);
 			g[vertex(current, g)].visited = false;
+			g[vertex(current, g)].marked = false;
+			g[vertex(current, g)].pred = 0;
+			g[vertex(current, g)].weight = 1;
 
-			if (!isLegal(i, j))
+			if (!isLegal(i , j))
 				continue;
-			// Up
-			if (i > 0 && isLegal(i - 1, j))
-			{
-				add_edge(current, current - cols, g);
-			}
+
+			// Up is Redundant
+
 			// Down
 			if (i < rows - 1 && isLegal(i + 1, j))
 			{
 				add_edge(current, current + cols, g);
 			}
-			// Left
-			if (j > 0 && isLegal(i, j - 1))
-			{
-				add_edge(current, current - 1, g);
-			}
+
+			// Left is Redundant
+
 			// Right
 			if (j < cols - 1 && isLegal(i, j + 1))
 			{
@@ -137,11 +136,25 @@ void maze::mapMazeToGraph(Graph &g)
 			}
 		}
 	}
+
+	// Iterate through the edges and initialize them
+	typedef graph_traits<Graph>::edge_iterator edge_iter;
+	edge_iter edgeIt, edgeIt_end;
+	for (tie(edgeIt, edgeIt_end) = edges(g); edgeIt != edgeIt_end; ++edgeIt)
+	{
+		g[*edgeIt].marked = false;
+		g[*edgeIt].visited= false;
+		g[*edgeIt].weight = 1;
+	}
 }
 
 void maze::printPath(Graph::vertex_descriptor end, stack<Graph::vertex_descriptor> &s, Graph g) {
+	// unsure of future implementation, but if items are pushed on the
+	// stack as they are visited then the stack will come reversed
+	// however, if it is done recursively then it can come the correct way
+	// to display and this reverse stack will be unnecessary... TBD
 	stack<Graph::vertex_descriptor> reverseStack;
-	while (s.top() != NULL)
+	while (!s.empty())
 	{
 		reverseStack.push(s.top());
 		s.pop();
