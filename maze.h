@@ -1,4 +1,3 @@
-// Sample solution for project #5
 #include "stdafx.h"
 #include <iostream>
 #include <limits.h>
@@ -13,8 +12,6 @@
 
 #include<stdlib.h>
 
-#define LargeValue 99999999
-
 using namespace std;
 
 class maze
@@ -26,7 +23,7 @@ public:
    void mapMazeToGraph(Graph &g);
    void printPath(Graph::vertex_descriptor end,
                         stack<Graph::vertex_descriptor> &s,
-                        Graph g);
+                        Graph &g);
    int numRows(){return rows;};
    int numCols(){return cols;};
 
@@ -119,7 +116,11 @@ void maze::mapMazeToGraph(Graph &g)
 			if (!isLegal(i , j))
 				continue;
 
-			// Up is Redundant
+			// Up is Redundant?
+			if (i > 0 && isLegal(i - 1, j))
+			{
+				add_edge(current, current - cols, g);
+			}
 
 			// Down
 			if (i < rows - 1 && isLegal(i + 1, j))
@@ -127,7 +128,11 @@ void maze::mapMazeToGraph(Graph &g)
 				add_edge(current, current + cols, g);
 			}
 
-			// Left is Redundant
+			// Left is Redundant?
+			if (j > 0 && isLegal(i, j - 1))
+			{
+				add_edge(current, current - 1, g);
+			}
 
 			// Right
 			if (j < cols - 1 && isLegal(i, j + 1))
@@ -148,22 +153,13 @@ void maze::mapMazeToGraph(Graph &g)
 	}
 }
 
-void maze::printPath(Graph::vertex_descriptor end, stack<Graph::vertex_descriptor> &s, Graph g) {
-	// unsure of future implementation, but if items are pushed on the
-	// stack as they are visited then the stack will come reversed
-	// however, if it is done recursively then it can come the correct way
-	// to display and this reverse stack will be unnecessary... TBD
+void maze::printPath(Graph::vertex_descriptor end, stack<Graph::vertex_descriptor> &s, Graph &g) {
 	stack<Graph::vertex_descriptor> reverseStack;
 	while (!s.empty())
 	{
-		reverseStack.push(s.top());
+		pair<int, int> cell(g[s.top()].cell.first, g[s.top()].cell.second);
+		print(rows - 1, cols - 1, cell.first, cell.second);
 		s.pop();
 	}
-
-	while (!reverseStack.empty())
-	{
-		pair<int, int> cell(g[reverseStack.top()].cell.first, g[reverseStack.top()].cell.second);
-		print(rows - 1, cols - 1, cell.first, cell.second);
-		reverseStack.pop();
-	}
 }
+

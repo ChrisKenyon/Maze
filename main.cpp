@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include <iostream>
 #include <limits.h>
-#include <vector>
 #include <list>
 #include <fstream>
 #include <queue>
@@ -11,35 +9,6 @@
 
 using namespace boost;
 using namespace std;
-
-void clearVisited(Graph &g)
-// Mark all nodes in g as not visited.
-{
-	int num = num_vertices(g);
-	for (int i = 0; i < num; i++)
-	{
-		g[vertex(i, g)].visited = false;
-	}
-}
-
-void setNodeWeights(Graph &g, int w)
-// Set all node weights to w.
-{
-	int num = num_vertices(g);
-	for (int i = 0; i < num; i++)
-	{
-		g[vertex(i, g)].weight = w;
-	}
-}
-
-void clearMarked(Graph &g)
-{
-	int num = num_vertices(g);
-	for (int i = 0; i < num; i++)
-	{
-		g[vertex(i, g)].marked = false;
-	}
-}
 
 int main()
 {
@@ -65,18 +34,18 @@ int main()
       Graph g(m.numRows()*m.numCols());
       m.mapMazeToGraph(g);
 
-	  //test print with test stack for maze0
+	  pair<int, int> goal(m.numRows() - 1, m.numCols() - 1);
 	  stack<Graph::vertex_descriptor> s;
-	  s.push(vertex(0, g));
-	  s.push(vertex(1, g));
-	  s.push(vertex(2, g));
-	  s.push(vertex(3, g));
-	  s.push(vertex(4, g));
-	  s.push(vertex(24, g));
+	  s = FindPathDFSRecursive(g, goal);
 	  m.printPath(num_vertices(g), s, g);
-	  //
-
-      cout << g << endl;
+	  s = FindPathDFSStack(g, goal);
+	  m.printPath(num_vertices(g), s, g);
+	  s = FindShortestPathDFS(g, goal);
+	  m.printPath(num_vertices(g), s, g);
+	  s = FindShortestPathBFS(g, goal);
+	  m.printPath(num_vertices(g), s, g);
+	  
+      //cout << g << endl;
    }
    catch (std::exception ex)
    {
