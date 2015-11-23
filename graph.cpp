@@ -1,8 +1,114 @@
 #include "stdafx.h"
 #include "graph.h"
+#include "heapV.h"
 
 using namespace std;
 using namespace boost;
+
+bool relax(Graph &g, Graph::vertex_descriptor u, Graph::vertex_descriptor v)
+{
+	pair<Graph::edge_descriptor, bool> e = edge(u, v, g);
+	// there's an edge u->v && the temp distance of v can be decreased by going through u
+	if (e.second && g[v].weight > g[u].weight + g[e.first].weight)
+	{
+		g[v].weight = g[u].weight + g[e.first].weight;
+		g[v].pred = u;
+		return true;
+	}
+	return false;
+}
+
+void Dijkstra(Graph &g, Graph::vertex_descriptor start)
+{
+	heapV<Graph::vertex_descriptor, Graph> heap;
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vertIter = vertices(g);
+	for (; vertIter.first != vertIter.second; ++vertIter.first)
+	{
+		g[*vertIter.first].weight = LargeValue;
+		g[*vertIter.first].pred = NULL;
+		heap.minHeapInsert(*vertIter.first, g);
+	}
+
+	g[start].weight = 0;
+
+	while (heap.size() != 0)
+	{
+		Graph::vertex_descriptor u = heap.extractMinHeapMinimum(g);
+		pair<Graph::adjacency_iterator, Graph::adjacency_iterator> neighborIter = adjacent_vertices(u, g);
+		for (; neighborIter.first != neighborIter.second; ++neighborIter.first)
+		{
+			Graph::vertex_descriptor v = *neighborIter.first;
+			if (relax(g, u, v))
+				heap.minHeapDecreaseKey(heap.getIndex(v), g);
+		}
+	}
+}
+
+stack<Graph::vertex_descriptor> getShortestPathFromBForD(Graph &g, Graph::vertex_descriptor target)
+{
+	stack<Graph::vertex_descriptor> s;
+	Graph::vertex_descriptor temp = target;
+	while (temp != NULL)
+	{
+		s.push(temp);
+		temp = g[temp].pred;
+	}
+	return s;
+}
+
+bool BellmanFord(Graph &g, Graph::vertex_descriptor start)
+{
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vertIter = vertices(g);
+	for (; vertIter.first != vertIter.second; ++vertIter.first)
+	{
+		g[*vertIter.first].weight = LargeValue;
+		g[*vertIter.first].pred = NULL;
+	}
+
+	g[start].weight = 0;
+
+	typedef graph_traits<Graph>::edge_iterator edge_iter;
+	pair<edge_iter, edge_iter> edgeIter;
+	for (int i = 1; i < num_vertices(g); i++)
+	{
+		for (edgeIter = edges(g); edgeIter.first != edgeIter.second; ++edgeIter.first)
+		{
+			Graph::vertex_descriptor u = source(*edgeIter.first, g);
+			Graph::vertex_descriptor v = target(*edgeIter.first, g);
+			relax(g, u, v);
+		}
+	}
+
+	for (edgeIter = edges(g); edgeIter.first != edgeIter.second; ++edgeIter.first)
+	{
+		Graph::edge_descriptor e = *edgeIter.first;
+		Graph::vertex_descriptor u = source(e, g);
+		Graph::vertex_descriptor v = target(e, g);
+		if (g[v].weight > g[u].weight + g[e].weight)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void printPaths(Graph &g, pair<Graph::vertex_iterator, Graph::vertex_iterator> vertItrRange, Graph::vertex_descriptor sourceNode)
+{
+	for (; vertItrRange.first != vertItrRange.second; ++vertItrRange.first)
+	{
+		stack<Graph::vertex_descriptor> s = getShortestPathFromBForD(g, *vertItrRange.first);
+		cout << "Path from " << *vertItrRange.first << " to " << sourceNode << ": " << endl;
+		while (!s.empty())
+		{
+			cout << s.top();
+			if (s.top() != sourceNode)
+				cout << " --> ";
+			s.pop();
+		}
+		cout << sourceNode << endl << endl;
+	}
+}
 
 template <typename T>
 void reverseStack(stack<T> &s)
@@ -19,11 +125,18 @@ void reverseStack(stack<T> &s)
 void clearVisited(Graph &g)
 // Mark all nodes in g as not visited.
 {
-	int num = num_vertices(g);
-	for (int i = 0; i < num; i++)
+	typedef graph_traits<Graph>::vertex_iterator vertex_iter;
+	pair<vertex_iter, vertex_iter> vertIter;
+	for (vertIter = vertices(g); vertIter.first != vertIter.second; ++vertIter.first)
 	{
-		g[vertex(i, g)].visited = false;
-		g[vertex(i, g)].pred = 0;
+		g[*vertIter.first].visited = false;
+	}
+
+	typedef graph_traits<Graph>::edge_iterator edge_iter;
+	pair<edge_iter, edge_iter> edgeIter;
+	for (edgeIter = edges(g); edgeIter.first != edgeIter.second; ++edgeIter.first)
+	{
+		g[*edgeIter.first].visited = false;
 	}
 }
 
@@ -39,10 +152,18 @@ void setNodeWeights(Graph &g, int w)
 
 void clearMarked(Graph &g)
 {
-	int num = num_vertices(g);
-	for (int i = 0; i < num; i++)
+	typedef graph_traits<Graph>::vertex_iterator vertex_iter;
+	pair<vertex_iter, vertex_iter> vertIter;
+	for (vertIter = vertices(g); vertIter.first != vertIter.second; ++vertIter.first)
 	{
-		g[vertex(i, g)].marked = false;
+		g[*vertIter.first].marked = false;
+	}
+
+	typedef graph_traits<Graph>::edge_iterator edge_iter;
+	pair<edge_iter, edge_iter> edgeIter;
+	for (edgeIter = edges(g); edgeIter.first != edgeIter.second; ++edgeIter.first)
+	{
+		g[*edgeIter.first].marked = false;
 	}
 }
 
@@ -125,6 +246,7 @@ stack<Graph::vertex_descriptor> FindPathDFSStack(Graph &g, pair<int, int> goalPo
 		printStack.push(currentVertex);
 		currentVertex = g[currentVertex].pred;
 	}
+
 	clearVisited(g);
 	return printStack;
 }
@@ -223,8 +345,8 @@ stack<Graph::vertex_descriptor> FindShortestPathBFS(Graph & g, pair<int, int> go
 }
 
 ostream& operator << (ostream &ostr, const VertexProperties &vp) {
-	ostr << "Cell [" << vp.cell.first << "," << vp.cell.second << "]:" << endl;
-	ostr << "Marked: " << vp.marked
+	ostr<< "Cell: (" << vp.cell.first << "," << vp.cell.second << ")"
+	    << "  Marked: " << vp.marked
 		<< "  Pred: " << vp.pred
 		<< "  Visited: " << vp.visited
 		<< "  Weight: " << vp.weight << endl;
@@ -242,16 +364,19 @@ typedef adjacency_list<vecS, vecS, bidirectionalS, VertexProperties, EdgePropert
 ostream& operator << (ostream &ostr, const Graph &g) {
 	// Iterate through the vertex properties and print them out
 	typedef graph_traits<Graph>::vertex_iterator vertex_iter;
-	std::pair<vertex_iter, vertex_iter> vertIter;
+	pair<vertex_iter, vertex_iter> vertIter;
 	for (vertIter = vertices(g); vertIter.first != vertIter.second; ++vertIter.first)
-		ostr << g[*vertIter.first] << std::endl;
-	ostr << std::endl;
+	{
+		ostr << "Vertex (" << *vertIter.first << "): "<< endl;
+		ostr << g[*vertIter.first] << endl;
+	}
 
 	// Iterate through the edges and print them out
 	typedef graph_traits<Graph>::edge_iterator edge_iter;
-	std::pair<edge_iter, edge_iter> edgeIter;
+	pair<edge_iter, edge_iter> edgeIter;
 	for (edgeIter = edges(g); edgeIter.first != edgeIter.second; ++edgeIter.first)
 	{
+		ostr << "Edge (" << source(*edgeIter.first, g) << "," << target(*edgeIter.first, g) << ") :" << endl;
 		ostr << g[*edgeIter.first] << endl;
 	}
 	return ostr;

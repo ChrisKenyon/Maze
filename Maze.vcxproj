@@ -144,6 +144,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="graph1.txt" />
+    <Text Include="graph10.txt" />
+    <Text Include="graph2.txt" />
+    <Text Include="graph3.txt" />
+    <Text Include="graph4.txt" />
+    <Text Include="graph5.txt" />
+    <Text Include="graph6.txt" />
+    <Text Include="graph7.txt" />
+    <Text Include="graph8.txt" />
+    <Text Include="graph9.txt" />
     <Text Include="maze0.txt" />
     <Text Include="maze1.txt" />
     <Text Include="maze10.txt" />
@@ -163,6 +173,7 @@
     <ClInclude Include="d_except.h" />
     <ClInclude Include="d_matrix.h" />
     <ClInclude Include="graph.h" />
+    <ClInclude Include="heapV.h" />
     <ClInclude Include="maze.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

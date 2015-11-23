@@ -55,6 +55,36 @@
     <Text Include="maze0.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="graph1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph4.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph5.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph6.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph7.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph8.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph9.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="graph10.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -73,6 +103,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heapV.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
